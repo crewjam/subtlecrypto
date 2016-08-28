@@ -1,0 +1,15 @@
+<html>
+    <head>
+        <script>
+            var clog = console.log
+            console.log = function(line) {
+                document.writeln("<pre>" + line + "</pre>");
+                clog.apply(null, arguments)
+            };
+        </script>
+        <script src="subtlecrypto_test.js"></script>
+    </head>
+    <body>
+        <p>To recompile tests use <code>go generate --tags js</code></p>
+    </body>
+</html>

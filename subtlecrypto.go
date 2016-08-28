@@ -1,5 +1,7 @@
 // +build js
 
+//go:generate gopherjs test -v --bench=. -c 
+
 package subtlecrypto
 
 import (
