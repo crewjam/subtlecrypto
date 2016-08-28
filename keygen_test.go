@@ -71,6 +71,7 @@ func BenchmarkRSAKeyGen_Subtle(b *testing.B) {
 	}
 }
 
+// See https://github.com/shurcooL/eX0/blob/17918f464a7c40e276bed59bb2765dc5186409e3/eX0-go/main_js.go#L26-L48
 func queryToArgs() []string {
 	u, err := url.Parse(js.Global.Get("location").Get("href").String())
 	if err != nil {
@@ -91,6 +92,6 @@ func queryToArgs() []string {
 func init() {
 	os.Args = queryToArgs()
 	if len(os.Args) == 1 {
-		os.Args = append(os.Args, "client-view") // Default mode when no parameters are provided.
+		os.Args = append(os.Args, "-test.v") // Default mode when no parameters are provided.
 	}
 }
