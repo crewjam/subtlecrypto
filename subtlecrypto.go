@@ -35,14 +35,6 @@ const (
 	UNWRAP_KEY  = "unwrapKey"
 )
 
-// Hash algorithms
-const (
-	SHA_1   = "SHA-1"
-	SHA_256 = "SHA-256"
-	SHA_384 = "SHA-384"
-	SHA_512 = "SHA-512"
-)
-
 type promise struct {
 	*js.Object
 }
@@ -61,12 +53,12 @@ func (p *promise) then() (*js.Object, error) {
 }
 
 type subtlecrypto struct {
-    *js.Object
+	*js.Object
 }
 
 func (s *subtlecrypto) CallAsync(method string, args ...interface{}) (*js.Object, error) {
-    p := &promise{s.Call(method, args...)}
-    return p.then()
+	p := &promise{s.Call(method, args...)}
+	return p.then()
 }
 
 var subtle *subtlecrypto
@@ -83,12 +75,13 @@ func init() {
 			subtlejs = crypto.Get("webkitSubtle")
 		}
 		if subtlejs != js.Undefined {
-		    subtle = &subtlecrypto{subtlejs}
+			subtle = &subtlecrypto{subtlejs}
 			return
 		}
 	}
 
-	// TODO fall back on pure-go implementation
+	// TODO nodejs
+
 	panic(errors.New("crypto/subtle not available in this environment"))
 }
 
@@ -121,15 +114,15 @@ func GenerateKey() (*BrowserKey, error) {
 
 	println("Generating $algo key for $uses")
 
-	key, err := subtle.CallAsync("generateKey", 
-	    map[string]interface{}{
-	        "name": algo, 
-	        "length": length,
-	    }, 
-	    true,  // extractable
-	    uses,
-    )
-    
+	key, err := subtle.CallAsync("generateKey",
+		map[string]interface{}{
+			"name":   algo,
+			"length": length,
+		},
+		true, // extractable
+		uses,
+	)
+
 	if err != nil {
 		return nil, err
 	}
@@ -141,17 +134,18 @@ func GenerateKeyPair() (*BrowserKeyPair, error) {
 	var uses = []string{SIGN, VERIFY}
 
 	println("Generating $algo key for $uses")
+	println(SHA_512)
 	keypair, err := subtle.CallAsync("generateKey",
 		map[string]interface{}{
 			"name":           algo,
 			"modulusLength":  2048,
 			"publicExponent": []byte{0x01, 0x00, 0x01},
-			"hash":           map[string]interface{}{"name": SHA_512},
+			"hash":           SHA_512,
 		},
 		true, // extractable
 		uses,
 	)
-	
+
 	if err != nil {
 		return nil, err
 	}
