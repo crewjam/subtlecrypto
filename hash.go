@@ -1,24 +1,19 @@
+// +build js
+
 package subtlecrypto
 
-import (
-	"github.com/gopherjs/gopherjs/js"
+var (
+	SHA_1   = newHash("SHA-1")
+	SHA_256 = newHash("SHA-256")
+	SHA_384 = newHash("SHA-384")
+	SHA_512 = newHash("SHA-512")
 )
 
-// Hash algorithms
-type HashAlgorithm struct {
-	*js.Object
-	Name string `js:"name"`
+type Hash struct {
+	*Algorithm
 }
 
-func hashForName(name string) *HashAlgorithm {
-	a := &HashAlgorithm{Object: js.Global.Get("Object").New()}
-	a.Name = name
+func newHash(name string) *Hash {
+	a := &Hash{newAlgorithm(name)}
 	return a
 }
-
-var (
-	SHA_1   = hashForName("SHA-1")
-	SHA_256 = hashForName("SHA-256")
-	SHA_384 = hashForName("SHA-384")
-	SHA_512 = hashForName("SHA-512")
-)

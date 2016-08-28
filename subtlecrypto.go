@@ -10,31 +10,18 @@ import (
 	"github.com/gopherjs/gopherjs/js"
 )
 
-// Algorithms
-const (
-	AES_CBC           = "AES-CBC"
-	AES_CTR           = "AES-CTR"
-	AES_GCM           = "AES-GCM"
-	RSA_OAEP          = "RSA-OAEP"
-	AES_KW            = "AES-KW"
-	HMAC              = "HMAC"
-	RSA_PSS           = "RSA-PSS"
-	RSASSA_PKCS1_v1_5 = "RSASSA-PKCS1-v1_5"
-	ECDSA             = "ECDSA"
-	ECDH              = "ECDH"
-	DH                = "DH"
-)
-
 // Uses
-const (
-	ENCRYPT     = "encrypt"
-	DECRYPT     = "decrypt"
-	SIGN        = "sign"
-	VERIFY      = "verify"
-	DERIVE_KEY  = "deriveKey"
-	DERIVE_BITS = "deriveBits"
-	WRAP_KEY    = "wrapKey"
-	UNWRAP_KEY  = "unwrapKey"
+type Use string
+
+var (
+	ENCRYPT     Use = "encrypt"
+	DECRYPT     Use = "decrypt"
+	SIGN        Use = "sign"
+	VERIFY      Use = "verify"
+	DERIVE_KEY  Use = "deriveKey"
+	DERIVE_BITS Use = "deriveBits"
+	WRAP_KEY    Use = "wrapKey"
+	UNWRAP_KEY  Use = "unwrapKey"
 )
 
 // Promise wraps a JS Promise/A+ object
@@ -89,72 +76,6 @@ func init() {
 	// TODO nodejs
 
 	panic(errors.New("crypto/subtle not available in this environment"))
-}
-
-type BrowserKey struct {
-	*js.Object
-}
-
-func (k *BrowserKey) Export() (string, error) {
-	exportedKey, err := subtle.CallAsync("exportKey", "jwk", k)
-	if err != nil {
-		return "", err
-	}
-
-	jwk := js.Global.Get("JSON").Call("stringify", exportedKey)
-	return jwk.String(), nil
-}
-
-type BrowserKeyPair struct {
-	*js.Object
-
-	PublicKey  *BrowserKey `js:"publicKey"`
-	PrivateKey *BrowserKey `js:"privateKey"`
-}
-
-func GenerateKey() (*BrowserKey, error) {
-	var algo = AES_CBC
-	var uses = []string{ENCRYPT, DECRYPT}
-	var length = 256
-
-	println("Generating $algo key for $uses")
-
-	key, err := subtle.CallAsync("generateKey",
-		map[string]interface{}{
-			"name":   algo,
-			"length": length,
-		},
-		true, // extractable
-		uses,
-	)
-
-	if err != nil {
-		return nil, err
-	}
-	return &BrowserKey{key}, nil
-}
-
-func GenerateKeyPair() (*BrowserKeyPair, error) {
-	var algo = RSASSA_PKCS1_v1_5
-	var uses = []string{SIGN, VERIFY}
-
-	println("Generating $algo key for $uses")
-	println(SHA_512)
-	keypair, err := subtle.CallAsync("generateKey",
-		map[string]interface{}{
-			"name":           algo,
-			"modulusLength":  2048,
-			"publicExponent": []byte{0x01, 0x00, 0x01},
-			"hash":           SHA_512,
-		},
-		true, // extractable
-		uses,
-	)
-
-	if err != nil {
-		return nil, err
-	}
-	return &BrowserKeyPair{Object: keypair}, nil
 }
 
 //   @override

@@ -8,7 +8,15 @@
                     if (i > 0) {
                         document.write(" ");
                     }
-                    document.write(arguments[i]);
+                    if (typeof arguments[i] === "string") {
+                        document.write(arguments[i]);
+                    } else if (arguments[i].$array) {
+                        document.write(JSON.stringify(arguments[i].$array));
+                    } else if (arguments[i].$val && arguments[i].Object) {
+                        document.write(JSON.stringify(arguments[i].Object));
+                    } else {
+                        document.write(arguments[i]);
+                    }
                 }
                 document.write("</pre>");
                 clog.apply(null, arguments)
