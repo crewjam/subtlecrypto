@@ -10,7 +10,7 @@ import (
 
 func TestAESKeyGen(t *testing.T) {
 	println("Generate AES Key")
-	key, err := GenerateSymmetricKey(AES_CBC(256), true)
+	key, err := GenerateSymmetricKey(AES_CBC(AES_256), true)
 	if err != nil {
 		t.Error(err)
 	}

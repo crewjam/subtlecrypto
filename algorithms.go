@@ -8,17 +8,26 @@ import (
 
 // Algorithms
 var (
-	AES_CBC           = newSymmetric("AES-CBC", ENCRYPT, DECRYPT, WRAP_KEY, UNWRAP_KEY)
-	AES_CTR           = newSymmetric("AES-CTR", ENCRYPT, DECRYPT, WRAP_KEY, UNWRAP_KEY)
-	AES_GCM           = newSymmetric("AES-GCM", ENCRYPT, DECRYPT, WRAP_KEY, UNWRAP_KEY)
+	AES_CBC           = newAES("AES-CBC", ENCRYPT, DECRYPT, WRAP_KEY, UNWRAP_KEY)
+	AES_CMAC          = newAES("AES-CMAC", SIGN, VERIFY)
+	AES_CTR           = newAES("AES-CTR", ENCRYPT, DECRYPT, WRAP_KEY, UNWRAP_KEY)
+	AES_GCM           = newAES("AES-GCM", ENCRYPT, DECRYPT, WRAP_KEY, UNWRAP_KEY)
+	AES_KW            = newAES("AES-KW", WRAP_KEY, UNWRAP_KEY)
+	DH                = newDH("DH", DERIVE_KEY, DERIVE_BITS)
+	ECDH              = newEC("ECDH", DERIVE_KEY, DERIVE_BITS)
+	ECDSA             = newEC("ECDSA", SIGN, VERIFY)
+	HMAC              = newHMAC("HMAC", SIGN, VERIFY)
 	RSA_OAEP          = newRSA("RSA-OAEP", ENCRYPT, DECRYPT, WRAP_KEY, UNWRAP_KEY)
-	AES_KW            = newSymmetric("AES-KW", WRAP_KEY, UNWRAP_KEY)
-	HMAC              = newSymmetricWithHash("HMAC", SIGN, VERIFY)
 	RSA_PSS           = newRSA("RSA-PSS", SIGN, VERIFY)
 	RSASSA_PKCS1_v1_5 = newRSA("RSASSA-PKCS1-v1_5", SIGN, VERIFY)
-	ECDSA             = newEC("ECDSA", SIGN, VERIFY)
-	ECDH              = newEC("ECDH", DERIVE_KEY, DERIVE_BITS)
-	DH                = newSymmetric("DH", DERIVE_KEY, DERIVE_BITS)
+)
+
+type AESLength int
+
+var (
+	AES_128 AESLength = 128
+	AES_192 AESLength = 192
+	AES_256 AESLength = 256
 )
 
 type NamedCurve string
@@ -48,10 +57,10 @@ type Symmetric struct {
 	Length int `js:"length"`
 }
 
-func newSymmetric(name string, uses ...Use) func(length int) *Symmetric {
-	return func(length int) *Symmetric {
+func newAES(name string, uses ...Use) func(length AESLength) *Symmetric {
+	return func(length AESLength) *Symmetric {
 		a := &Symmetric{Algorithm: newAlgorithm(name, uses...)}
-		a.Length = length
+		a.Length = int(length)
 		return a
 	}
 }
@@ -61,13 +70,16 @@ type SymmetricWithHash struct {
 	Hash *Hash `js:"hash"`
 }
 
-func newSymmetricWithHash(name string, uses ...Use) func(length int, hash *Hash) *SymmetricWithHash {
-	return func(length int, hash *Hash) *SymmetricWithHash {
+func newHMAC(name string, uses ...Use) func(hash *Hash, length ...int) *SymmetricWithHash {
+	return func(hash *Hash, length ...int) *SymmetricWithHash {
 		a := &Symmetric{Algorithm: newAlgorithm(name, uses...)}
-		a.Length = length
+		if len(length) > 0 {
+			a.Length = length[0]
+		}
 
 		ah := &SymmetricWithHash{Symmetric: a}
 		ah.Hash = hash
+
 		return ah
 	}
 }
@@ -98,6 +110,21 @@ func newEC(name string, uses ...Use) func(namedCurve NamedCurve) *EC {
 	return func(namedCurve NamedCurve) *EC {
 		a := &EC{Algorithm: newAlgorithm(name, uses...)}
 		a.NamedCurve = namedCurve
+		return a
+	}
+}
+
+type DHArgs struct {
+	*Algorithm
+	Prime     []byte `js:"prime"`
+	Generator []byte `js:"generator"`
+}
+
+func newDH(name string, uses ...Use) func(prime, generator []byte) *DHArgs {
+	return func(prime, generator []byte) *DHArgs {
+		a := &DHArgs{Algorithm: newAlgorithm(name, uses...)}
+		a.Prime = prime
+		a.Generator = generator
 		return a
 	}
 }
