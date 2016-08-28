@@ -4,7 +4,6 @@ package subtlecrypto
 
 import (
 	"errors"
-	"math/big"
 
 	"github.com/gopherjs/gopherjs/js"
 )
@@ -146,7 +145,7 @@ func GenerateKeyPair() (*BrowserKeyPair, error) {
 		map[string]interface{}{
 			"name":           algo,
 			"modulusLength":  2048,
-			"publicExponent": big.NewInt(65537).Bytes(),
+			"publicExponent": []byte{0x01, 0x00, 0x01},
 			"hash":           map[string]interface{}{"name": SHA_512},
 		},
 		true, // extractable
