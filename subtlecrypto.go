@@ -1,6 +1,6 @@
 // +build js
 
-//go:generate gopherjs test -v --bench=. -c 
+//go:generate gopherjs test -v --short --bench=. -c
 
 package subtlecrypto
 
@@ -37,11 +37,15 @@ const (
 	UNWRAP_KEY  = "unwrapKey"
 )
 
-type promise struct {
+// Promise wraps a JS Promise/A+ object
+type Promise struct {
 	*js.Object
 }
 
-func (p *promise) then() (*js.Object, error) {
+// Then wraps an asynchronous call to the then method
+// of a promise, returning the success or failure as
+// a return pair.
+func (p *Promise) Then() (*js.Object, error) {
 	success := make(chan *js.Object)
 	failure := make(chan *js.Object)
 	p.Call("then", func(o *js.Object) { success <- o }, func(o *js.Object) { failure <- o })
@@ -59,8 +63,8 @@ type subtlecrypto struct {
 }
 
 func (s *subtlecrypto) CallAsync(method string, args ...interface{}) (*js.Object, error) {
-	p := &promise{s.Call(method, args...)}
-	return p.then()
+	p := &Promise{s.Call(method, args...)}
+	return p.Then()
 }
 
 var subtle *subtlecrypto
@@ -92,8 +96,7 @@ type BrowserKey struct {
 }
 
 func (k *BrowserKey) Export() (string, error) {
-	promise := &promise{subtle.Call("exportKey", "jwk", k)}
-	exportedKey, err := promise.then()
+	exportedKey, err := subtle.CallAsync("exportKey", "jwk", k)
 	if err != nil {
 		return "", err
 	}
