@@ -1,31 +1,5 @@
 <html>
     <head>
-        <script>
-            var last = Date.now();
-            var clog = console.log;
-            console.log = function() {
-                var now = Date.now();
-                document.write('<pre style="margin: 5px 0 0 5em; border-left: 1px solid #CCC; padding-left: 5px;">' 
-                    + '<span style="position:absolute; left:5px; width: 4.5em; text-align: right; color: red;">+' + (now - last) + 'ms</span>')
-                last = now;
-                for (var i = 0; i < arguments.length; i++) {
-                    if (i > 0) {
-                        document.write(" ");
-                    }
-                    if (typeof arguments[i] === "string") {
-                        document.write(arguments[i]);
-                    } else if (arguments[i].$array) {
-                        document.write(JSON.stringify(arguments[i].$array));
-                    } else if (arguments[i].$val && arguments[i].Object) {
-                        document.write(JSON.stringify(arguments[i].Object));
-                    } else {
-                        document.write(arguments[i]);
-                    }
-                }
-                document.write("&nbsp;</pre>");
-                clog.apply(null, arguments)
-            };
-        </script>
         <script src="subtlecrypto_test.js"></script>
     </head>
     <body>
