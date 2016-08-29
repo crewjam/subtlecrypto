@@ -6,20 +6,24 @@ import (
 	"github.com/gopherjs/gopherjs/js"
 )
 
-// Algorithms
+// Recommended Algorithms
 var (
-	AES_CBC           = newAES("AES-CBC", ENCRYPT, DECRYPT, WRAP_KEY, UNWRAP_KEY)
-	AES_CMAC          = newAES("AES-CMAC", SIGN, VERIFY)
-	AES_CTR           = newAES("AES-CTR", ENCRYPT, DECRYPT, WRAP_KEY, UNWRAP_KEY)
 	AES_GCM           = newAES("AES-GCM", ENCRYPT, DECRYPT, WRAP_KEY, UNWRAP_KEY)
 	AES_KW            = newAES("AES-KW", WRAP_KEY, UNWRAP_KEY)
-	DH                = newDH("DH", DERIVE_KEY, DERIVE_BITS)
 	ECDH              = newEC("ECDH", DERIVE_KEY, DERIVE_BITS)
 	ECDSA             = newEC("ECDSA", SIGN, VERIFY)
 	HMAC              = newHMAC("HMAC", SIGN, VERIFY)
-	RSA_OAEP          = newRSA("RSA-OAEP", ENCRYPT, DECRYPT, WRAP_KEY, UNWRAP_KEY)
-	RSA_PSS           = newRSA("RSA-PSS", SIGN, VERIFY)
 	RSASSA_PKCS1_v1_5 = newRSA("RSASSA-PKCS1-v1_5", SIGN, VERIFY)
+)
+
+// Discouraged Algorithms
+var (
+	RSA_OAEP = newRSA("RSA-OAEP", ENCRYPT, DECRYPT, WRAP_KEY, UNWRAP_KEY)
+	AES_CTR  = newAES("AES-CTR", ENCRYPT, DECRYPT, WRAP_KEY, UNWRAP_KEY)
+	AES_CBC  = newAES("AES-CBC", ENCRYPT, DECRYPT, WRAP_KEY, UNWRAP_KEY)
+	AES_CMAC = newAES("AES-CMAC", SIGN, VERIFY)
+	RSA_PSS  = newRSA("RSA-PSS", SIGN, VERIFY)
+	DH       = newDH("DH", DERIVE_KEY, DERIVE_BITS)
 )
 
 type AESLength int

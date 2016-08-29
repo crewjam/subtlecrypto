@@ -19,6 +19,7 @@ var (
 
 type BrowserKey struct {
 	*js.Object
+	Algorithm *Algorithm `js:"algorithm"`
 }
 
 func (k *BrowserKey) Export(format ExportFormat) (string, error) {
@@ -40,6 +41,18 @@ func (k *BrowserKey) Export(format ExportFormat) (string, error) {
 	}
 }
 
+func (k *BrowserKey) Sign(data []byte) ([]byte, error) {
+	algo := k.Algorithm
+	result, err := subtle.CallAsync("sign", algo, k, data)
+	if err != nil {
+		return nil, err
+	}
+
+	array := js.Global.Get("Uint8Array").New(result)
+	signature := array.Interface().([]byte)
+	return signature, nil
+}
+
 type BrowserKeyPair struct {
 	*js.Object
 
@@ -59,7 +72,7 @@ func GenerateSymmetricKey(algo *Symmetric, extractable bool, uses ...Use) (*Brow
 	if err != nil {
 		return nil, err
 	}
-	return &BrowserKey{key}, nil
+	return &BrowserKey{Object: key}, nil
 }
 
 func GenerateRSAKeyPair(algo *RSA, extractable bool, uses ...Use) (*BrowserKeyPair, error) {
