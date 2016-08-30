@@ -75,3 +75,8 @@ func init() {
 
 	panic(errors.New("crypto/subtle not available in this environment"))
 }
+
+func getBytes(obj *js.Object) []byte {
+	array := js.Global.Get("Uint8Array").New(obj)
+	return array.Interface().([]byte)
+}

@@ -3,8 +3,6 @@
 package subtlecrypto
 
 import (
-	"encoding/hex"
-
 	"github.com/gopherjs/gopherjs/js"
 )
 
@@ -20,37 +18,6 @@ var (
 type BrowserKey struct {
 	*js.Object
 	Algorithm *Algorithm `js:"algorithm"`
-}
-
-func (k *BrowserKey) Export(format ExportFormat) (string, error) {
-	exportedKey, err := subtle.CallAsync("exportKey", format, k)
-	if err != nil {
-		return "", err
-	}
-
-	switch format {
-	case JWK:
-		output := js.Global.Get("JSON").Call("stringify", exportedKey, nil, 3)
-		return output.String(), nil
-	case PKCS8:
-		array := js.Global.Get("Uint8Array").New(exportedKey)
-		return hex.EncodeToString(array.Interface().([]uint8)), nil
-	default:
-		array := js.Global.Get("Uint8Array").New(exportedKey)
-		return string(array.Interface().([]uint8)), nil
-	}
-}
-
-func (k *BrowserKey) Sign(data []byte) ([]byte, error) {
-	algo := k.Algorithm
-	result, err := subtle.CallAsync("sign", algo, k, data)
-	if err != nil {
-		return nil, err
-	}
-
-	array := js.Global.Get("Uint8Array").New(result)
-	signature := array.Interface().([]byte)
-	return signature, nil
 }
 
 type BrowserKeyPair struct {
