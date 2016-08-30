@@ -15,7 +15,7 @@ func TestAESEncrypt(t *testing.T) {
 
 	plaintext := []byte("Hello World")
 	t.Log("Encrypt plaintext:", string(plaintext))
-	cyphertext, iv, err := key.Encrypt(plaintext, nil)
+	cyphertext, iv, err := key.Encrypt(plaintext)
 	if err != nil {
 		t.Error(err)
 	}
@@ -30,12 +30,10 @@ func TestAESDecrypt(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	str, _ := key.Export(PKCS8)
-	t.Log(str)
 
 	plaintext := []byte("Hello World")
 	t.Log("Encrypt plaintext:", string(plaintext))
-	cyphertext, iv, err := key.Encrypt(plaintext, nil)
+	cyphertext, iv, err := key.Encrypt(plaintext)
 	if err != nil {
 		t.Error(err)
 	}

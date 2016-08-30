@@ -1,6 +1,6 @@
 package subtlecrypto
 
-func (k *BrowserKey) Sign(data []byte) ([]byte, error) {
+func (k *CryptoKey) Sign(data []byte) ([]byte, error) {
 	algo := k.Algorithm
 	signature, err := subtle.CallAsync("sign", algo, k, data)
 	if err != nil {
@@ -10,7 +10,7 @@ func (k *BrowserKey) Sign(data []byte) ([]byte, error) {
 	return getBytes(signature), nil
 }
 
-func (k *BrowserKey) Verify(signature, data []byte) (bool, error) {
+func (k *CryptoKey) Verify(signature, data []byte) (bool, error) {
 	algo := k.Algorithm
 	isValid, err := subtle.CallAsync("verify", algo, k, signature, data)
 	if err != nil {

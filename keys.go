@@ -15,57 +15,53 @@ var (
 	PKCS8 ExportFormat = "pkcs8"
 )
 
-type BrowserKey struct {
+type CryptoKey struct {
 	*js.Object
 	Algorithm *Algorithm `js:"algorithm"`
 }
 
-type BrowserKeyPair struct {
+type CryptoKeyPair struct {
 	*js.Object
 
-	PublicKey  *BrowserKey `js:"publicKey"`
-	PrivateKey *BrowserKey `js:"privateKey"`
+	PublicKey  *CryptoKey `js:"publicKey"`
+	PrivateKey *CryptoKey `js:"privateKey"`
 }
 
-func GenerateSymmetricKey(algo *Symmetric, extractable bool, uses ...Use) (*BrowserKey, error) {
+func GenerateSymmetricKey(algo *Symmetric, extractable bool, uses ...Use) (*CryptoKey, error) {
 	if len(uses) == 0 {
 		uses = algo.Uses
 	}
-
-	println("Generating", algo.Name, "key for", uses)
 
 	key, err := subtle.CallAsync("generateKey", algo, extractable, uses)
 
 	if err != nil {
 		return nil, err
 	}
-	return &BrowserKey{Object: key}, nil
+	return &CryptoKey{Object: key}, nil
 }
 
-func GenerateRSAKeyPair(algo *RSA, extractable bool, uses ...Use) (*BrowserKeyPair, error) {
+func GenerateRSAKeyPair(algo *RSA, extractable bool, uses ...Use) (*CryptoKeyPair, error) {
 	if len(uses) == 0 {
 		uses = algo.Uses
 	}
 
-	println("Generating", algo.Name, "key for", uses)
 	keypair, err := subtle.CallAsync("generateKey", algo, extractable, uses)
 
 	if err != nil {
 		return nil, err
 	}
-	return &BrowserKeyPair{Object: keypair}, nil
+	return &CryptoKeyPair{Object: keypair}, nil
 }
 
-func GenerateECKeyPair(algo *EC, extractable bool, uses ...Use) (*BrowserKeyPair, error) {
+func GenerateECKeyPair(algo *EC, extractable bool, uses ...Use) (*CryptoKeyPair, error) {
 	if len(uses) == 0 {
 		uses = algo.Uses
 	}
 
-	println("Generating", algo.Name, "key for", uses)
 	keypair, err := subtle.CallAsync("generateKey", algo, extractable, uses)
 
 	if err != nil {
 		return nil, err
 	}
-	return &BrowserKeyPair{Object: keypair}, nil
+	return &CryptoKeyPair{Object: keypair}, nil
 }
