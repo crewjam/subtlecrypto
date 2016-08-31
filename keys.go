@@ -20,11 +20,19 @@ type CryptoKey struct {
 	Algorithm *Algorithm `js:"algorithm"`
 }
 
+type PublicKey struct {
+	*CryptoKey
+}
+
+type PrivateKey struct {
+	*CryptoKey
+}
+
 type CryptoKeyPair struct {
 	*js.Object
 
-	PublicKey  *CryptoKey `js:"publicKey"`
-	PrivateKey *CryptoKey `js:"privateKey"`
+	PublicKey  *PublicKey  `js:"publicKey"`
+	PrivateKey *PrivateKey `js:"privateKey"`
 }
 
 func GenerateSymmetricKey(algo *Symmetric, extractable bool, uses ...Use) (*CryptoKey, error) {
