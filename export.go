@@ -4,7 +4,34 @@ import (
 	"encoding/hex"
 
 	"github.com/gopherjs/gopherjs/js"
+
+	"bitbucket.org/kevalin-p2p/subtlecrypto/jwk"
 )
+
+func (k *CryptoKey) ExportJWK() (*jwk.Key, error) {
+	exportedKey, err := subtle.CallAsync("exportKey", JWK, k)
+	if err != nil {
+		return nil, err
+	}
+
+	return &jwk.Key{Object: exportedKey}, nil
+}
+
+func (a *Algorithm) ImportJWK(key *jwk.Key, exportable bool, uses ...Use) (*CryptoKey, error) {
+	if len(uses) == 0 {
+		uses = a.Uses
+	}
+
+	// The Algorithm object 'a' wraps a js.Object, which will pass all algorithm
+	// information to the call to importKey, not just the fields defined in Algorithm.
+	// Otherwise we would need to override this method in RSA
+	importedKey, err := subtle.CallAsync("importKey", format, key, a, exportable, uses)
+	if err != nil {
+		return nil, err
+	}
+
+	return &CryptoKey{Object: importedKey}, nil
+}
 
 func (k *CryptoKey) Export(format ExportFormat) (string, error) {
 	exportedKey, err := subtle.CallAsync("exportKey", format, k)

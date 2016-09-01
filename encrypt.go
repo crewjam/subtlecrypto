@@ -37,15 +37,6 @@ func (k *CryptoKey) Encrypt(plaintext []byte) (cyphertext []byte, iv []byte, err
 	return
 }
 
-func (k *PublicKey) Encrypt(plaintext []byte) (cyphertext []byte, err error) {
-	buffer, err := subtle.CallAsync("encrypt", k.Algorithm, k, plaintext)
-	if err != nil {
-		return nil, err
-	}
-
-	return getBytes(buffer), nil
-}
-
 func (k *CryptoKey) Decrypt(cyphertext []byte, iv []byte) ([]byte, error) {
 	args := &EncryptionArgs{Object: js.Global.Get("Object").New()}
 	args.Name = k.Algorithm.Name
@@ -57,4 +48,22 @@ func (k *CryptoKey) Decrypt(cyphertext []byte, iv []byte) ([]byte, error) {
 	}
 
 	return getBytes(plaintext), nil
+}
+
+func (k *PublicKey) Encrypt(plaintext []byte) (cyphertext []byte, err error) {
+	buffer, err := subtle.CallAsync("encrypt", k.Algorithm, k, plaintext)
+	if err != nil {
+		return nil, err
+	}
+
+	return getBytes(buffer), nil
+}
+
+func (k *PrivateKey) Decrypt(cyphertext []byte) (plaintext []byte, err error) {
+	buffer, err := subtle.CallAsync("decrypt", k.Algorithm, k, cyphertext)
+	if err != nil {
+		return nil, err
+	}
+
+	return getBytes(buffer), nil
 }

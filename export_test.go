@@ -6,6 +6,20 @@ import (
 	_ "bitbucket.org/mikehouston/browsertests"
 )
 
+func TestAESExport(t *testing.T) {
+	t.Log("Generate AES Key")
+	key, err := GenerateSymmetricKey(AES_GCM(AES_256), true)
+	if err != nil {
+		t.Error(err)
+	}
+
+	jwk, err := key.ExportJWK()
+	if err != nil {
+		t.Error(err)
+	}
+	t.Logf("Type: %s, Key: %s", jwk.KeyType, jwk.K)
+}
+
 func TestAESImport(t *testing.T) {
 	t.Log("Generate AES Key")
 	key, err := GenerateSymmetricKey(AES_GCM(AES_256), true)
