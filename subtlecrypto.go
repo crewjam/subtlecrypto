@@ -6,9 +6,9 @@ import (
 	"github.com/gopherjs/gopherjs/js"
 )
 
-// Uses
 type Use string
 
+// Uses
 var (
 	ENCRYPT     Use = "encrypt"
 	DECRYPT     Use = "decrypt"
