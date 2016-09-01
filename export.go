@@ -25,7 +25,7 @@ func (a *Algorithm) ImportJWK(key *jwk.Key, exportable bool, uses ...Use) (*Cryp
 	// The Algorithm object 'a' wraps a js.Object, which will pass all algorithm
 	// information to the call to importKey, not just the fields defined in Algorithm.
 	// Otherwise we would need to override this method in RSA
-	importedKey, err := subtle.CallAsync("importKey", format, key, a, exportable, uses)
+	importedKey, err := subtle.CallAsync("importKey", JWK, key, a, exportable, uses)
 	if err != nil {
 		return nil, err
 	}
